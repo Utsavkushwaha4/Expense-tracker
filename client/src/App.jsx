@@ -6,7 +6,7 @@ import {
 import { 
   Wallet, TrendingUp, TrendingDown, Trash2, ArrowUpRight, ArrowDownRight,
   Shield, Eye, EyeOff, Lock, Mail, User, ArrowRight, Home, BarChart2, Plus, 
-  FileText, X, Sparkles, LogOut, CheckCircle2
+  FileText, X, Sparkles, LogOut, CheckCircle2, Check
 } from 'lucide-react';
 
 const API_BASE = 'https://expense-tracker-cqsw.onrender.com/api';
@@ -31,7 +31,9 @@ const CATEGORIES = [
 
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
-  const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
+  const [userName, setUserName] = useState(localStorage.getItem('userName') || 'Utsav Kushwaha');
+  const [nameEditInput, setNameEditInput] = useState(localStorage.getItem('userName') || 'Utsav Kushwaha');
+  const [nameSavedNotice, setNameSavedNotice] = useState(false);
   
   // Auth Form States
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'register' | 'forgot' | 'reset'
@@ -99,6 +101,7 @@ export default function App() {
   // Auth Handlers
   const handleAuth = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const endpoint = authMode === 'register' ? '/auth/register' : '/auth/login';
     const payload = authMode === 'register' ? { name, email, password } : { email, password };
     try {
@@ -110,9 +113,12 @@ export default function App() {
       if (loggedInName) {
         localStorage.setItem('userName', loggedInName);
         setUserName(loggedInName);
+        setNameEditInput(loggedInName);
       }
     } catch (err) {
       alert(err.response?.data?.message || 'Authentication error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -156,12 +162,20 @@ export default function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('userName');
     setToken('');
-    setUserName('');
     setAnalytics(null);
     setExpenses([]);
     setAuthMode('login');
+  };
+
+  // Update Display Name
+  const handleUpdateName = (e) => {
+    e.preventDefault();
+    if (!nameEditInput.trim()) return;
+    localStorage.setItem('userName', nameEditInput.trim());
+    setUserName(nameEditInput.trim());
+    setNameSavedNotice(true);
+    setTimeout(() => setNameSavedNotice(false), 3000);
   };
 
   // Salary Update
@@ -209,21 +223,23 @@ export default function App() {
 
   // Dynamic First Name Extractor
   const getFirstName = () => {
-    if (!userName) return 'FinPulse User';
+    if (!userName) return 'User';
     return userName.trim().split(' ')[0];
   };
 
   // ---------------- AUTHENTICATION PORTAL ----------------
   if (!token) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-[#070b14] px-4 py-10 relative overflow-hidden font-sans select-none">
+      <div className="min-h-screen w-full flex items-center justify-center bg-[#070b14] px-4 py-8 relative overflow-hidden font-sans select-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-emerald-500/10 via-teal-500/10 to-transparent blur-[120px] pointer-events-none" />
 
         <div className="w-full max-w-4xl relative z-10">
-          <div className="flex items-center justify-between mb-6 px-2">
+          
+          {/* Top Brand Bar */}
+          <div className="flex items-center justify-between mb-5 px-2">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-[1px] shadow-lg shadow-emerald-500/20">
-                <div className="w-full h-full bg-[#090e1a] rounded-[15px] flex items-center justify-center text-emerald-400 font-bold">
+                <div className="w-full h-full bg-[#090e1a] rounded-[15px] flex items-center justify-center text-emerald-400 font-bold text-lg">
                   ₹
                 </div>
               </div>
@@ -237,25 +253,23 @@ export default function App() {
                 <p className="text-slate-500 text-xs">Autonomous Personal Wealth Engine</p>
               </div>
             </div>
-            <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 bg-slate-900/80 border border-slate-800 px-3.5 py-1.5 rounded-full backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Secure Vault Active</span>
-            </div>
           </div>
 
-          <div className="bg-[#0b1120]/90 backdrop-blur-2xl border border-slate-800/80 rounded-[32px] p-6 sm:p-10 shadow-2xl shadow-black/80 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
+          <div className="bg-[#0b1120]/95 backdrop-blur-2xl border border-slate-800/80 rounded-[32px] p-6 sm:p-10 shadow-2xl shadow-black/80 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Desktop-Only Feature Teaser */}
+            <div className="hidden lg:flex lg:col-span-5 flex-col justify-between space-y-6">
               <div>
                 <span className="text-[11px] uppercase tracking-widest font-bold text-emerald-400/90 bg-emerald-950/40 border border-emerald-800/40 px-3 py-1 rounded-lg inline-block mb-3">
                   Financial Intelligence
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
-                  Take total command of <br className="hidden sm:inline" />
+                <h2 className="text-3xl font-bold text-white tracking-tight leading-snug">
+                  Take total command of <br />
                   <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
                     your monthly capital.
                   </span>
                 </h2>
-                <p className="text-slate-400 text-xs sm:text-sm mt-3 leading-relaxed">
+                <p className="text-slate-400 text-sm mt-3 leading-relaxed">
                   Real-time cash flow monitoring, dynamic month-on-month expense analytics, and instant balance auditing.
                 </p>
               </div>
@@ -284,9 +298,10 @@ export default function App() {
               </div>
             </div>
 
-            <div className="lg:col-span-7 bg-[#0d1527]/70 border border-slate-800/80 rounded-2xl p-6 sm:p-8">
+            {/* Direct Login Form (Clean & Prominent) */}
+            <div className="w-full lg:col-span-7 bg-[#0d1527]/80 border border-slate-800/80 rounded-2xl p-6 sm:p-8">
               <div className="mb-6">
-                <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                <h3 className="text-xl font-bold text-white tracking-tight">
                   {authMode === 'login' && 'Sign in to Console'}
                   {authMode === 'register' && 'Create Your Ledger'}
                   {authMode === 'forgot' && 'Account Recovery'}
@@ -320,7 +335,7 @@ export default function App() {
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           required
-                          className="w-full pl-10 pr-4 py-2.5 bg-[#080d18] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition"
+                          className="w-full pl-10 pr-4 py-3 bg-[#080d18] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500 transition"
                         />
                       </div>
                     </div>
@@ -336,7 +351,7 @@ export default function App() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="w-full pl-10 pr-4 py-2.5 bg-[#080d18] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition"
+                        className="w-full pl-10 pr-4 py-3 bg-[#080d18] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500 transition"
                       />
                     </div>
                   </div>
@@ -348,7 +363,7 @@ export default function App() {
                         <button
                           type="button"
                           onClick={() => { setAuthMode('forgot'); setStatusMessage(''); }}
-                          className="text-[11px] text-emerald-400 hover:text-emerald-300 transition"
+                          className="text-xs text-emerald-400 hover:text-emerald-300 transition"
                         >
                           Forgot key?
                         </button>
@@ -362,12 +377,12 @@ export default function App() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="w-full pl-10 pr-10 py-2.5 bg-[#080d18] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition"
+                        className="w-full pl-10 pr-10 py-3 bg-[#080d18] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500 transition"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3.5 top-3 text-slate-500 hover:text-slate-300"
+                        className="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-300"
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -376,9 +391,10 @@ export default function App() {
 
                   <button
                     type="submit"
-                    className="w-full mt-2 py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-emerald-500/20 active:scale-[0.99] transition flex items-center justify-center gap-2 cursor-pointer"
+                    disabled={loading}
+                    className="w-full mt-2 py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-emerald-500/20 active:scale-[0.99] transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
-                    <span>{authMode === 'register' ? 'Initialize Account' : 'Authenticate Session'}</span>
+                    <span>{loading ? 'Connecting...' : authMode === 'register' ? 'Initialize Account' : 'Authenticate Session'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
 
@@ -410,7 +426,7 @@ export default function App() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="w-full pl-10 pr-4 py-2.5 bg-[#080d18] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition"
+                        className="w-full pl-10 pr-4 py-3 bg-[#080d18] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500 transition"
                       />
                     </div>
                   </div>
@@ -444,7 +460,7 @@ export default function App() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="w-full px-4 py-2.5 bg-[#080d18] border border-slate-700/80 rounded-xl text-white text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition"
+                      className="w-full px-4 py-3 bg-[#080d18] border border-slate-700/80 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500 transition"
                     />
                   </div>
                   <div>
@@ -455,7 +471,7 @@ export default function App() {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
-                      className="w-full px-4 py-2.5 bg-[#080d18] border border-slate-700/80 rounded-xl text-white text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition"
+                      className="w-full px-4 py-3 bg-[#080d18] border border-slate-700/80 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500 transition"
                     />
                   </div>
                   <button
@@ -488,7 +504,7 @@ export default function App() {
 
   // ---------------- AUTHENTICATED DASHBOARD ----------------
   return (
-    <div className="min-h-screen bg-[#070b14] text-slate-100 pb-36 md:pb-12 font-sans selection:bg-emerald-500/30 select-none relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#070b14] text-slate-100 pb-36 md:pb-12 font-sans selection:bg-emerald-500/30 select-none relative overflow-x-hidden text-sm">
       
       {/* Top Header with Personalized Welcome Greeting */}
       <header className="sticky top-0 z-30 bg-[#0b1120]/90 backdrop-blur-xl border-b border-slate-800/80 px-4 py-3.5 md:px-8">
@@ -502,14 +518,14 @@ export default function App() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-white tracking-tight">
+                <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">
                   Welcome, <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">{getFirstName()}</span> 👋
                 </h1>
                 <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                   PRO
                 </span>
               </div>
-              <p className="text-slate-500 text-xs hidden sm:block">Autonomous Expense &amp; Capital Engine</p>
+              <p className="text-slate-400 text-xs hidden sm:block">Autonomous Expense &amp; Capital Engine</p>
             </div>
           </div>
 
@@ -517,7 +533,7 @@ export default function App() {
           <div className="hidden md:flex items-center gap-1 bg-[#0f172a] border border-slate-800/80 p-1 rounded-2xl">
             <button
               onClick={() => setActiveTab('home')}
-              className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition ${
+              className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                 activeTab === 'home' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -525,7 +541,7 @@ export default function App() {
             </button>
             <button
               onClick={() => setActiveTab('charts')}
-              className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition ${
+              className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                 activeTab === 'charts' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -533,7 +549,7 @@ export default function App() {
             </button>
             <button
               onClick={() => setActiveTab('reports')}
-              className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition ${
+              className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                 activeTab === 'reports' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -541,7 +557,7 @@ export default function App() {
             </button>
             <button
               onClick={() => setActiveTab('account')}
-              className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition ${
+              className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                 activeTab === 'account' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -553,7 +569,7 @@ export default function App() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="hidden sm:flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl shadow-md shadow-emerald-500/20 active:scale-95 transition"
+              className="hidden sm:flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl shadow-md shadow-emerald-500/20 active:scale-95 transition cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Log Expense</span>
@@ -561,7 +577,7 @@ export default function App() {
 
             <button
               onClick={handleLogout}
-              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-rose-400 hover:border-rose-500/30 transition"
+              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-rose-400 hover:border-rose-500/30 transition cursor-pointer"
               title="Logout"
             >
               <LogOut className="w-4 h-4" />
@@ -578,21 +594,21 @@ export default function App() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div className="bg-[#0b1120]/90 border border-slate-800/80 p-4 sm:p-5 rounded-2xl shadow-lg">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px] sm:text-xs font-medium">Monthly Salary</span>
+              <span className="text-slate-400 text-xs font-medium">Monthly Salary</span>
               <span className="text-emerald-400/80 bg-emerald-500/10 p-1.5 rounded-lg hidden sm:block">
-                <Wallet className="w-3.5 h-3.5" />
+                <Wallet className="w-4 h-4" />
               </span>
             </div>
-            <h3 className="text-lg sm:text-2xl font-black text-white mt-1">₹{analytics?.salary || 0}</h3>
+            <h3 className="text-xl sm:text-2xl font-black text-white mt-1">₹{analytics?.salary || 0}</h3>
             <form onSubmit={updateSalary} className="flex gap-2 mt-2 sm:mt-3">
               <input
                 type="number"
                 placeholder="Set salary"
-                className="w-full bg-[#070b14] px-2 py-1 text-xs rounded-lg border border-slate-700/80 text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#070b14] px-2.5 py-1.5 text-xs rounded-lg border border-slate-700/80 text-white focus:outline-none focus:border-emerald-500"
                 value={salaryInput}
                 onChange={(e) => setSalaryInput(e.target.value)}
               />
-              <button type="submit" className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-2.5 rounded-lg transition">
+              <button type="submit" className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-2.5 rounded-lg transition cursor-pointer">
                 Set
               </button>
             </form>
@@ -600,28 +616,28 @@ export default function App() {
 
           <div className="bg-[#0b1120]/90 border border-slate-800/80 p-4 sm:p-5 rounded-2xl shadow-lg">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px] sm:text-xs font-medium">Current Month Spent</span>
+              <span className="text-slate-400 text-xs font-medium">Current Month Spent</span>
               <span className="text-rose-400/80 bg-rose-500/10 p-1.5 rounded-lg hidden sm:block">
-                <TrendingUp className="w-3.5 h-3.5" />
+                <TrendingUp className="w-4 h-4" />
               </span>
             </div>
-            <h3 className="text-lg sm:text-2xl font-black text-rose-400 mt-1">₹{analytics?.currentMonthTotal || 0}</h3>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 mt-2">Active burn rate</p>
+            <h3 className="text-xl sm:text-2xl font-black text-rose-400 mt-1">₹{analytics?.currentMonthTotal || 0}</h3>
+            <p className="text-[11px] text-slate-500 mt-2">Active burn rate</p>
           </div>
 
           <div className="bg-[#0b1120]/90 border border-slate-800/80 p-4 sm:p-5 rounded-2xl shadow-lg">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px] sm:text-xs font-medium">Previous Month</span>
+              <span className="text-slate-400 text-xs font-medium">Previous Month</span>
               <span className="text-slate-400 bg-slate-800 p-1.5 rounded-lg hidden sm:block">
-                <TrendingDown className="w-3.5 h-3.5" />
+                <TrendingDown className="w-4 h-4" />
               </span>
             </div>
-            <h3 className="text-lg sm:text-2xl font-black text-slate-300 mt-1">₹{analytics?.previousMonthTotal || 0}</h3>
-            <div className="flex items-center gap-1 mt-2 text-[10px] sm:text-xs font-semibold">
+            <h3 className="text-xl sm:text-2xl font-black text-slate-300 mt-1">₹{analytics?.previousMonthTotal || 0}</h3>
+            <div className="flex items-center gap-1 mt-2 text-[11px] sm:text-xs font-semibold">
               {diffPercent > 0 ? (
-                <span className="text-rose-400 flex items-center"><ArrowUpRight className="w-3 h-3"/> +{diffPercent}% vs prev</span>
+                <span className="text-rose-400 flex items-center"><ArrowUpRight className="w-3.5 h-3.5"/> +{diffPercent}% vs prev</span>
               ) : diffPercent < 0 ? (
-                <span className="text-emerald-400 flex items-center"><ArrowDownRight className="w-3 h-3"/> {diffPercent}% vs prev</span>
+                <span className="text-emerald-400 flex items-center"><ArrowDownRight className="w-3.5 h-3.5"/> {diffPercent}% vs prev</span>
               ) : (
                 <span className="text-slate-500">Same as prev</span>
               )}
@@ -630,35 +646,35 @@ export default function App() {
 
           <div className="bg-[#0b1120]/90 border border-slate-800/80 p-4 sm:p-5 rounded-2xl shadow-lg">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px] sm:text-xs font-medium">Net Balance</span>
+              <span className="text-slate-400 text-xs font-medium">Net Balance</span>
               <span className="text-teal-400 bg-teal-500/10 p-1.5 rounded-lg hidden sm:block">
-                <Sparkles className="w-3.5 h-3.5" />
+                <Sparkles className="w-4 h-4" />
               </span>
             </div>
-            <h3 className={`text-lg sm:text-2xl font-black mt-1 ${(analytics?.remainingBalance || 0) < 0 ? 'text-rose-500' : 'text-emerald-400'}`}>
+            <h3 className={`text-xl sm:text-2xl font-black mt-1 ${(analytics?.remainingBalance || 0) < 0 ? 'text-rose-500' : 'text-emerald-400'}`}>
               ₹{analytics?.remainingBalance || 0}
             </h3>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 mt-2">Available surplus</p>
+            <p className="text-[11px] text-slate-500 mt-2">Available surplus</p>
           </div>
         </div>
 
         {/* VIEW 1: HOME (Expenses Feed) */}
         {activeTab === 'home' && (
           <div className="space-y-6">
-            <div className="bg-[#0b1120]/90 border border-slate-800/80 rounded-2xl p-4 sm:p-6 shadow-xl">
+            <div className="bg-[#0b1120]/90 border border-slate-800/80 rounded-2xl p-5 sm:p-6 shadow-xl">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-base font-bold text-white">Recent Transactions</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-white">Recent Transactions</h3>
                   <p className="text-xs text-slate-400">All expenses logged this month</p>
                 </div>
-                <span className="text-xs text-slate-400 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-lg">
+                <span className="text-xs text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg">
                   {expenses.length} Records
                 </span>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs sm:text-sm">
-                  <thead className="text-slate-400 border-b border-slate-800/80 text-[11px] uppercase tracking-wider">
+                <table className="w-full text-left text-sm">
+                  <thead className="text-slate-400 border-b border-slate-800/80 text-xs uppercase tracking-wider">
                     <tr>
                       <th className="pb-3 font-semibold">Title</th>
                       <th className="pb-3 font-semibold">Category</th>
@@ -671,18 +687,18 @@ export default function App() {
                     {expenses.length > 0 ? (
                       expenses.map((exp) => (
                         <tr key={exp._id} className="hover:bg-slate-800/30 transition">
-                          <td className="py-3 font-medium text-white">{exp.title}</td>
-                          <td className="py-3">
-                            <span className="px-2.5 py-0.5 rounded-md text-[10px] sm:text-[11px] font-medium bg-slate-900 border border-slate-800 text-slate-300">
+                          <td className="py-3.5 font-medium text-white">{exp.title}</td>
+                          <td className="py-3.5">
+                            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-900 border border-slate-800 text-slate-300">
                               {exp.category?.name || 'General'}
                             </span>
                           </td>
-                          <td className="py-3 text-slate-400 text-xs">{new Date(exp.date).toLocaleDateString()}</td>
-                          <td className="py-3 text-rose-400 font-bold">₹{exp.amount}</td>
-                          <td className="py-3 text-right">
+                          <td className="py-3.5 text-slate-400 text-xs">{new Date(exp.date).toLocaleDateString()}</td>
+                          <td className="py-3.5 text-rose-400 font-bold">₹{exp.amount}</td>
+                          <td className="py-3.5 text-right">
                             <button
                               onClick={() => deleteExpense(exp._id)}
-                              className="text-slate-500 hover:text-rose-400 transition p-1"
+                              className="text-slate-500 hover:text-rose-400 transition p-1 cursor-pointer"
                               title="Delete Expense"
                             >
                               <Trash2 className="w-4 h-4 inline" />
@@ -709,7 +725,7 @@ export default function App() {
           <div className="bg-[#0b1120]/90 border border-slate-800/80 p-5 sm:p-7 rounded-2xl shadow-xl space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-emerald-400" /> Category: This Month vs Last Month
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">Comparative spend distribution across all categories</p>
@@ -750,7 +766,7 @@ export default function App() {
         {activeTab === 'reports' && (
           <div className="bg-[#0b1120]/90 border border-slate-800/80 p-5 sm:p-7 rounded-2xl shadow-xl space-y-6">
             <div>
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                 <FileText className="w-5 h-5 text-teal-400" /> Monthly Financial Audit Report
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">High-level summary of your savings velocity and burn rate</p>
@@ -758,25 +774,25 @@ export default function App() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 rounded-xl bg-[#080d18] border border-slate-800 space-y-1">
-                <p className="text-xs text-slate-500 font-medium">Monthly Burn Ratio</p>
-                <p className="text-xl font-bold text-white">
+                <p className="text-xs text-slate-400 font-medium">Monthly Burn Ratio</p>
+                <p className="text-2xl font-black text-white">
                   {analytics?.salary ? `${Math.round(((analytics?.currentMonthTotal || 0) / analytics.salary) * 100)}%` : '0%'}
                 </p>
-                <p className="text-[11px] text-slate-500">Percentage of monthly salary exhausted</p>
+                <p className="text-xs text-slate-500">Percentage of monthly salary exhausted</p>
               </div>
 
               <div className="p-4 rounded-xl bg-[#080d18] border border-slate-800 space-y-1">
-                <p className="text-xs text-slate-500 font-medium">Total Entries Logged</p>
-                <p className="text-xl font-bold text-emerald-400">{expenses.length}</p>
-                <p className="text-[11px] text-slate-500">Transactions stored in ledger</p>
+                <p className="text-xs text-slate-400 font-medium">Total Entries Logged</p>
+                <p className="text-2xl font-black text-emerald-400">{expenses.length}</p>
+                <p className="text-xs text-slate-500">Transactions stored in ledger</p>
               </div>
 
               <div className="p-4 rounded-xl bg-[#080d18] border border-slate-800 space-y-1">
-                <p className="text-xs text-slate-500 font-medium">Monthly Net Growth</p>
-                <p className={`text-xl font-bold ${(analytics?.remainingBalance || 0) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <p className="text-xs text-slate-400 font-medium">Monthly Net Growth</p>
+                <p className={`text-2xl font-black ${(analytics?.remainingBalance || 0) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {(analytics?.remainingBalance || 0) >= 0 ? '+ Savings Surplus' : '- Budget Deficit'}
                 </p>
-                <p className="text-[11px] text-slate-500">Calculated against base monthly salary</p>
+                <p className="text-xs text-slate-500">Calculated against base monthly salary</p>
               </div>
             </div>
 
@@ -787,21 +803,22 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW 4: ACCOUNT (User Profile & Credentials Management) */}
+        {/* VIEW 4: ACCOUNT (User Profile & Name Editor) */}
         {activeTab === 'account' && (
           <div className="max-w-2xl mx-auto bg-[#0b1120]/90 border border-slate-800/80 p-6 sm:p-8 rounded-2xl shadow-xl space-y-6">
             <div>
               <h3 className="text-lg font-bold text-white">Account Settings &amp; Security</h3>
-              <p className="text-xs text-slate-400 mt-1">Manage your active FinPulse session and credentials</p>
+              <p className="text-xs text-slate-400 mt-1">Manage your active FinPulse session and profile</p>
             </div>
 
+            {/* Profile Display Header */}
             <div className="p-4 rounded-xl bg-[#080d18] border border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-lg">
                   {getFirstName().charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white">{userName || 'Authenticated User'}</p>
+                  <p className="text-base font-bold text-white">{userName}</p>
                   <p className="text-xs text-slate-500">Active FinPulse Ledger Member</p>
                 </div>
               </div>
@@ -809,6 +826,39 @@ export default function App() {
                 Connected
               </span>
             </div>
+
+            {/* Change User Name Form */}
+            <form onSubmit={handleUpdateName} className="p-4 rounded-xl bg-[#080d18] border border-slate-800 space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                  Display Name / Greeting Name
+                </label>
+                {nameSavedNotice && (
+                  <span className="text-xs text-emerald-400 flex items-center gap-1 font-semibold">
+                    <Check className="w-3.5 h-3.5" /> Saved!
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={nameEditInput}
+                  onChange={(e) => setNameEditInput(e.target.value)}
+                  placeholder="Enter your name (e.g. Utsav Kushwaha)"
+                  className="w-full bg-[#070b14] px-3 py-2.5 text-sm rounded-xl border border-slate-700 text-white focus:outline-none focus:border-emerald-500"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-xl transition shrink-0 cursor-pointer"
+                >
+                  Save Name
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Yeh naam header me "Welcome, {nameEditInput.split(' ')[0] || 'Name'} 👋" ke roop me dikhega.
+              </p>
+            </form>
 
             <div className="space-y-3 pt-2">
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Security &amp; Credentials</h4>
@@ -848,7 +898,7 @@ export default function App() {
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 text-slate-500 hover:text-white rounded-lg transition"
+                className="p-1.5 text-slate-500 hover:text-white rounded-lg transition cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -861,7 +911,7 @@ export default function App() {
                 <select
                   value={categoryName}
                   onChange={(e) => setCategoryName(e.target.value)}
-                  className="w-full bg-[#080d18] border border-slate-700/80 rounded-xl p-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#080d18] border border-slate-700/80 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500"
                 >
                   {CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>
@@ -877,7 +927,7 @@ export default function App() {
                 <input
                   type="text"
                   placeholder="e.g. Swiggy order, Mobile recharge"
-                  className="w-full bg-[#080d18] border border-slate-700/80 rounded-xl p-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#080d18] border border-slate-700/80 rounded-xl p-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
@@ -890,7 +940,7 @@ export default function App() {
                 <input
                   type="number"
                   placeholder="e.g. 450"
-                  className="w-full bg-[#080d18] border border-slate-700/80 rounded-xl p-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#080d18] border border-slate-700/80 rounded-xl p-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   required
@@ -901,13 +951,13 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="w-1/2 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-400 font-bold text-xs rounded-xl border border-slate-800 transition"
+                  className="w-1/2 py-3 bg-slate-900 hover:bg-slate-800 text-slate-400 font-bold text-xs rounded-xl border border-slate-800 transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="w-1/2 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition cursor-pointer"
+                  className="w-1/2 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition cursor-pointer"
                 >
                   Save Expense
                 </button>
@@ -919,25 +969,25 @@ export default function App() {
       )}
 
       {/* ========================================================================= */}
-      {/* BESPOKE FLOATING ISLAND BOTTOM NAVIGATION (REFERENCE MATCHED DOCK) */}
+      {/* BESPOKE FLOATING ISLAND BOTTOM NAVIGATION (REFINED GEOMETRY) */}
       {/* ========================================================================= */}
-      <div className="md:hidden fixed bottom-4 inset-x-4 max-w-md mx-auto z-40">
+      <div className="md:hidden fixed bottom-3 inset-x-4 max-w-md mx-auto z-40">
         
         {/* Outer Floating Dock Frame */}
-        <div className="relative bg-[#0d1424] border border-slate-700/70 rounded-[36px] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.8)] px-5 pt-3 pb-2 backdrop-blur-2xl">
+        <div className="relative bg-[#0d1424] border border-slate-700/70 rounded-[34px] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.8)] px-5 pt-3 pb-2 backdrop-blur-2xl">
           
           {/* Center Notch Curved Silhouette Mask */}
-          <div className="absolute -top-[23px] left-1/2 -translate-x-1/2 w-[78px] h-[34px] pointer-events-none">
-            <svg viewBox="0 0 78 34" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-              <path d="M0 34C14 34 16 12 39 12C62 12 64 34 78 34H0Z" fill="#0d1424"/>
-              <path d="M0 34C14 34 16 12 39 12C62 12 64 34 78 34" stroke="#334155" strokeWidth="1.2"/>
+          <div className="absolute -top-[21px] left-1/2 -translate-x-1/2 w-[76px] h-[32px] pointer-events-none">
+            <svg viewBox="0 0 76 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+              <path d="M0 32C14 32 16 11 38 11C60 11 62 32 76 32H0Z" fill="#0d1424"/>
+              <path d="M0 32C14 32 16 11 38 11C60 11 62 32 76 32" stroke="#334155" strokeWidth="1.2"/>
             </svg>
           </div>
 
-          {/* Elevated Floating Action Button (+) */}
+          {/* Elevated Floating Action Button (+) (Lowered for perfect fit) */}
           <button 
             onClick={() => setIsModalOpen(true)} 
-            className="absolute -top-7 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600 text-slate-950 flex items-center justify-center shadow-[0_8px_20px_rgba(16,185,129,0.35)] active:scale-90 transition-transform cursor-pointer z-50 border-[3px] border-[#070b14]"
+            className="absolute -top-5 left-1/2 -translate-x-1/2 w-13 h-13 rounded-full bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600 text-slate-950 flex items-center justify-center shadow-[0_8px_20px_rgba(16,185,129,0.35)] active:scale-90 transition-transform cursor-pointer z-50 border-[3px] border-[#070b14]"
             title="Log Expense"
           >
             <Plus className="w-7 h-7 stroke-[2.8] stroke-slate-950" />
@@ -1004,7 +1054,7 @@ export default function App() {
           </div>
 
           {/* Bottom Swipe Indicator Pill */}
-          <div className="w-28 h-1 bg-slate-600/70 rounded-full mx-auto mt-2"></div>
+          <div className="w-24 h-1 bg-slate-600/70 rounded-full mx-auto mt-2"></div>
 
         </div>
       </div>
