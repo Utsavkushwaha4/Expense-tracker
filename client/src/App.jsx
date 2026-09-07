@@ -11,10 +11,16 @@ const API_BASE = 'https://expense-tracker-cqsw.onrender.com/api';
 
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
+  
+  // Auth Form States
+  const [authMode, setAuthMode] = useState('login'); // 'login' | 'register' | 'forgot' | 'reset'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
-  const [isRegister, setIsRegister] = useState(false);
+  const [resetToken, setResetToken] = useState('');
+  const [statusMessage, setStatusMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // App States
   const [analytics, setAnalytics] = useState(null);
@@ -25,6 +31,18 @@ export default function App() {
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [categoryName, setCategoryName] = useState('Food');
+
+  // Check URL on load for /reset-password/:token
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path.includes('/reset-password/')) {
+      const extractedToken = path.split('/reset-password/')[1];
+      if (extractedToken) {
+        setResetToken(extractedToken);
+        setAuthMode('reset');
+      }
+    }
+  }, []);
 
   // Auth Headers
   const getAuthHeaders = () => ({
@@ -51,11 +69,11 @@ export default function App() {
     fetchData();
   }, [token]);
 
-  // Auth Handlers
+  // Auth Handlers (Login / Register)
   const handleAuth = async (e) => {
     e.preventDefault();
-    const endpoint = isRegister ? '/auth/register' : '/auth/login';
-    const payload = isRegister ? { name, email, password } : { email, password };
+    const endpoint = authMode === 'register' ? '/auth/register' : '/auth/login';
+    const payload = authMode === 'register' ? { name, email, password } : { email, password };
     try {
       const res = await axios.post(`${API_BASE}${endpoint}`, payload);
       localStorage.setItem('token', res.data.token);
@@ -65,11 +83,50 @@ export default function App() {
     }
   };
 
+  // Forgot Password Handler
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatusMessage('');
+    try {
+      const res = await axios.post(`${API_BASE}/auth/forgot-password`, { email });
+      setStatusMessage(res.data.message || 'Reset link sent! Please check your email.');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Error sending reset email');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Reset Password Handler
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+    setLoading(true);
+    setStatusMessage('');
+    try {
+      const res = await axios.post(`${API_BASE}/auth/reset-password/${resetToken}`, { password });
+      alert(res.data.message || 'Password updated successfully! Please login.');
+      window.history.pushState({}, '', '/');
+      setAuthMode('login');
+      setPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to reset password. Link may have expired.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     setToken('');
     setAnalytics(null);
     setExpenses([]);
+    setAuthMode('login');
   };
 
   // Salary Update
@@ -112,51 +169,144 @@ export default function App() {
     }
   };
 
-  // Login/Register Screen
+  // ---------------- AUTH SCREENS ----------------
   if (!token) {
     return (
       <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-slate-800 p-8 rounded-2xl shadow-xl border border-slate-700">
+          
+          {/* Header Title */}
           <h2 className="text-2xl font-bold text-center mb-6 text-emerald-400">
-            {isRegister ? 'Create an Account' : 'Expense Tracker Login'}
+            {authMode === 'login' && 'Expense Tracker Login'}
+            {authMode === 'register' && 'Create an Account'}
+            {authMode === 'forgot' && 'Reset Your Password'}
+            {authMode === 'reset' && 'Set New Password'}
           </h2>
-          <form onSubmit={handleAuth} className="space-y-4">
-            {isRegister && (
+
+          {/* Success / Status Banner */}
+          {statusMessage && (
+            <div className="mb-4 p-3 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-sm rounded-lg text-center">
+              {statusMessage}
+            </div>
+          )}
+
+          {/* 1. LOGIN / REGISTER FORM */}
+          {(authMode === 'login' || authMode === 'register') && (
+            <form onSubmit={handleAuth} className="space-y-4">
+              {authMode === 'register' && (
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  className="w-full p-3 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-emerald-500"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              )}
               <input
-                type="text"
-                placeholder="Full Name"
+                type="email"
+                placeholder="Email Address"
                 className="w-full p-3 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-emerald-500"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
-            )}
-            <input
-              type="email"
-              placeholder="Email Address"
-              className="w-full p-3 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-emerald-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full p-3 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-emerald-500"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button
-              type="submit"
-              className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 font-semibold rounded-lg transition"
-            >
-              {isRegister ? 'Sign Up' : 'Log In'}
-            </button>
-          </form>
-          <p className="text-center text-sm text-slate-400 mt-4 cursor-pointer hover:underline" onClick={() => setIsRegister(!isRegister)}>
-            {isRegister ? 'Already have an account? Log in' : "Don't have an account? Sign up"}
-          </p>
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full p-3 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-emerald-500"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+
+              {authMode === 'login' && (
+                <div className="text-right">
+                  <span 
+                    onClick={() => { setAuthMode('forgot'); setStatusMessage(''); }} 
+                    className="text-xs text-slate-400 hover:text-emerald-400 cursor-pointer"
+                  >
+                    Forgot Password?
+                  </span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 font-semibold rounded-lg transition"
+              >
+                {authMode === 'register' ? 'Sign Up' : 'Log In'}
+              </button>
+
+              <p 
+                className="text-center text-sm text-slate-400 mt-4 cursor-pointer hover:underline" 
+                onClick={() => setAuthMode(authMode === 'register' ? 'login' : 'register')}
+              >
+                {authMode === 'register' ? 'Already have an account? Log in' : "Don't have an account? Sign up"}
+              </p>
+            </form>
+          )}
+
+          {/* 2. FORGOT PASSWORD FORM */}
+          {authMode === 'forgot' && (
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <p className="text-xs text-slate-400 text-center mb-2">
+                Enter your registered email. We'll send a password reset link to your inbox.
+              </p>
+              <input
+                type="email"
+                placeholder="Your Registered Email"
+                className="w-full p-3 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-emerald-500"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 font-semibold rounded-lg transition disabled:opacity-50"
+              >
+                {loading ? 'Sending Link...' : 'Send Reset Link'}
+              </button>
+
+              <p 
+                className="text-center text-sm text-slate-400 mt-4 cursor-pointer hover:underline" 
+                onClick={() => { setAuthMode('login'); setStatusMessage(''); }}
+              >
+                Back to Login
+              </p>
+            </form>
+          )}
+
+          {/* 3. RESET PASSWORD FORM */}
+          {authMode === 'reset' && (
+            <form onSubmit={handleResetPassword} className="space-y-4">
+              <input
+                type="password"
+                placeholder="New Password"
+                className="w-full p-3 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-emerald-500"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Confirm New Password"
+                className="w-full p-3 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:border-emerald-500"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 font-semibold rounded-lg transition disabled:opacity-50"
+              >
+                {loading ? 'Updating Password...' : 'Save New Password'}
+              </button>
+            </form>
+          )}
+
         </div>
       </div>
     );
@@ -230,7 +380,6 @@ export default function App() {
 
         {/* Charts & Form Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Comparison Chart */}
           <div className="lg:col-span-2 bg-slate-900 p-6 rounded-xl border border-slate-800">
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-emerald-400" /> Category: This Month vs Last Month
@@ -255,7 +404,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Add Expense Form */}
           <div className="bg-slate-900 p-6 rounded-xl border border-slate-800">
             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
               <PlusCircle className="w-5 h-5 text-emerald-400" /> Log Expense

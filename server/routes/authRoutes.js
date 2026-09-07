@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
 const { protect } = require('../middleware/authMiddleware');
+const sendEmail = require('../utils/sendEmail');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
@@ -87,6 +89,100 @@ router.put('/salary', protect, async (req, res) => {
       name: updatedUser.name,
       email: updatedUser.email,
       monthlySalary: updatedUser.monthlySalary,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// ---------------- NEW: FORGOT PASSWORD ----------------
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'No account found with this email' });
+    }
+
+    // Generate random raw reset token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    // Hash token and set to resetPasswordToken field
+    user.resetPasswordToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+
+    // Set token expiration (15 minutes from now)
+    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+
+    await user.save();
+
+    // Reset Link pointing to your Vercel frontend
+    const resetUrl = `https://expense-tracker-eight-beta-38.vercel.app/reset-password/${resetToken}`;
+
+    const message = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h2>Password Reset Request</h2>
+        <p>You requested a password reset for your Expense Tracker account.</p>
+        <p>Click the button below to reset your password. This link is valid for <strong>15 minutes</strong>:</p>
+        <a href="${resetUrl}" style="background: #2563eb; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a>
+        <p>If you didn't request this, you can safely ignore this email.</p>
+      </div>
+    `;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: 'Expense Tracker - Password Reset',
+        html: message,
+      });
+
+      res.status(200).json({ message: 'Password reset link sent to your email' });
+    } catch (err) {
+      user.resetPasswordToken = null;
+      user.resetPasswordExpire = null;
+      await user.save();
+      return res.status(500).json({ message: 'Email could not be sent: ' + err.message });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// ---------------- NEW: RESET PASSWORD ----------------
+router.post('/reset-password/:token', async (req, res) => {
+  const { password } = req.body;
+
+  // Hash url token to compare with DB hash
+  const resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  try {
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    // Set new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+
+    // Clear reset token fields
+    user.resetPasswordToken = null;
+    user.resetPasswordExpire = null;
+
+    await user.save();
+
+    res.status(200).json({
+      message: 'Password reset successful. You can now login with your new password.',
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
