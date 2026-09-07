@@ -172,168 +172,179 @@ export default function App() {
     }
   };
 
-  // ---------------- MODERN SPLIT-CARD AUTH SCREEN ----------------
+  // ---------------- BESPOKE MODERN FINTECH AUTH SCREEN ----------------
   if (!token) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-[#070b12] px-4 py-8 relative overflow-hidden font-sans">
+      <div className="min-h-screen w-full flex items-center justify-center bg-[#070b14] px-4 py-10 relative overflow-hidden font-sans select-none">
         
-        {/* Ambient Mesh Dots */}
-        <div 
-          className="absolute inset-0 opacity-[0.035] pointer-events-none"
-          style={{
-            backgroundImage: 'radial-gradient(#10b981 1.5px, transparent 1.5px)',
-            backgroundSize: '24px 24px'
-          }}
-        />
+        {/* Subtle Ambient Radial Glow */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-emerald-500/10 via-teal-500/10 to-transparent blur-[120px] pointer-events-none" />
+        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-emerald-600/5 blur-[100px] pointer-events-none" />
 
-        {/* Minimal Brand Tag Top Left */}
-        <div className="absolute top-6 left-6 flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-sm">
-            <Wallet className="w-4 h-4" />
-          </div>
-          <span className="text-white font-bold tracking-wider text-sm">
-            FINPULSE <span className="text-[10px] text-emerald-400 font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 ml-1">EXPENSE OS</span>
-          </span>
-        </div>
-
-        {/* Main Split-Card Box */}
-        <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl shadow-black/80 border border-slate-200/80 overflow-hidden grid grid-cols-1 md:grid-cols-12 relative z-10">
+        {/* Outer Container */}
+        <div className="w-full max-w-4xl relative z-10">
           
-          {/* Left Hero Panel (Dark Blue / Cyan-Emerald Glow) */}
-          <div className="md:col-span-5 bg-[#0e1626] text-white p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-60 h-60 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-teal-500/10 rounded-full blur-2xl pointer-events-none" />
-
-            <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/90 border border-slate-700/60 mb-6 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[10px] font-bold text-slate-300 tracking-widest uppercase">
-                  Smart Wealth Intelligence
-                </span>
-              </div>
-
-              <div className="w-13 h-13 w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-6 shadow-inner">
-                <TrendingUp className="w-6 h-6" />
-              </div>
-
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
-                Intelligent Expense <br />
-                <span className="text-emerald-400">&amp; Budget Analytics.</span>
-              </h2>
-
-              <p className="text-slate-400 text-xs sm:text-sm mt-4 leading-relaxed font-normal">
-                Real-time cash flow monitoring, automated category tracking, and monthly financial comparison.
-              </p>
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-slate-800/80 relative z-10 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-slate-800/90 border border-slate-700 flex items-center justify-center text-emerald-400">
-                <Shield className="w-4 h-4" />
+          {/* Top Brand Bar */}
+          <div className="flex items-center justify-between mb-6 px-2">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-[1px] shadow-lg shadow-emerald-500/20">
+                <div className="w-full h-full bg-[#090e1a] rounded-[15px] flex items-center justify-center text-emerald-400">
+                  <Wallet className="w-5 h-5" />
+                </div>
               </div>
               <div>
-                <p className="text-[11px] font-bold text-slate-200 uppercase tracking-wider">End-to-End Encrypted</p>
-                <p className="text-[10px] text-slate-400 font-medium">Secured authentication &amp; data vault</p>
+                <h1 className="text-white text-base font-bold tracking-tight flex items-center gap-2">
+                  FinPulse
+                  <span className="text-[10px] font-semibold tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                    EXPENSE OS
+                  </span>
+                </h1>
+                <p className="text-slate-500 text-xs">Autonomous Personal Wealth Engine</p>
               </div>
+            </div>
+
+            {/* Micro Badge */}
+            <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 bg-slate-900/80 border border-slate-800 px-3.5 py-1.5 rounded-full backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Secure Vault Active</span>
             </div>
           </div>
 
-          {/* Right Panel (Clean Portal Login Form) */}
-          <div className="md:col-span-7 bg-white p-8 sm:p-12 flex flex-col justify-between relative">
-            <div 
-              className="absolute inset-0 opacity-[0.03] pointer-events-none"
-              style={{
-                backgroundImage: 'radial-gradient(#0e1626 1.2px, transparent 1.2px)',
-                backgroundSize: '18px 18px'
-              }}
-            />
-
-            <div className="relative z-10">
-              {/* Heading */}
-              <div className="mb-6">
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                  {authMode === 'login' && 'FINANCIAL ACCESS'}
-                  {authMode === 'register' && 'CREATE PORTAL ACCOUNT'}
-                  {authMode === 'forgot' && 'ACCOUNT RECOVERY'}
-                  {authMode === 'reset' && 'CREATE NEW PASSWORD'}
-                </h3>
-                <p className="text-[11px] font-bold text-slate-400 tracking-wider uppercase mt-0.5">
-                  {authMode === 'login' && 'Secure Portal Login'}
-                  {authMode === 'register' && 'Register For Free Account'}
-                  {authMode === 'forgot' && 'Reset Password Via Secure Token'}
-                  {authMode === 'reset' && 'Enter Your Updated Password'}
+          {/* Unified Matte-Glass Main Card */}
+          <div className="bg-[#0b1120]/90 backdrop-blur-2xl border border-slate-800/80 rounded-[32px] p-6 sm:p-10 shadow-2xl shadow-black/80 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Column: Visual Feature Teaser */}
+            <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
+              <div>
+                <span className="text-[11px] uppercase tracking-widest font-bold text-emerald-400/90 bg-emerald-950/40 border border-emerald-800/40 px-3 py-1 rounded-lg inline-block mb-3">
+                  Financial Intelligence
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
+                  Take total command of <br className="hidden sm:inline" />
+                  <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+                    your monthly capital.
+                  </span>
+                </h2>
+                <p className="text-slate-400 text-xs sm:text-sm mt-3 leading-relaxed">
+                  Real-time cash flow monitoring, dynamic month-on-month expense analytics, and instant balance auditing.
                 </p>
               </div>
 
-              {/* Status/Success Message */}
+              {/* Dynamic Mockup Card (App feature teaser) */}
+              <div className="p-4 rounded-2xl bg-[#080d18] border border-slate-800 shadow-xl space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-400 flex items-center gap-1.5">
+                    <TrendingUp className="w-3.5 h-3.5 text-emerald-400" /> Projected Efficiency
+                  </span>
+                  <span className="text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-md text-[10px]">
+                    +18.4% This Month
+                  </span>
+                </div>
+                <div>
+                  <p className="text-[11px] text-slate-500 font-medium">Net Available Balance</p>
+                  <p className="text-xl font-black text-white tracking-tight">₹48,250.00</p>
+                </div>
+                {/* Visual Progress Line */}
+                <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
+                  <div className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-[72%] rounded-full" />
+                </div>
+              </div>
+
+              {/* Privacy Footnote */}
+              <div className="flex items-center gap-2 text-slate-500 text-xs">
+                <Shield className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Zero-knowledge client encryption &amp; local sync</span>
+              </div>
+            </div>
+
+            {/* Right Column: Portal Form */}
+            <div className="lg:col-span-7 bg-[#0d1527]/70 border border-slate-800/80 rounded-2xl p-6 sm:p-8">
+              
+              <div className="mb-6">
+                <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                  {authMode === 'login' && 'Sign in to Console'}
+                  {authMode === 'register' && 'Create Your Ledger'}
+                  {authMode === 'forgot' && 'Account Recovery'}
+                  {authMode === 'reset' && 'Create New Key'}
+                </h3>
+                <p className="text-slate-400 text-xs mt-1">
+                  {authMode === 'login' && 'Enter your authorized credentials below'}
+                  {authMode === 'register' && 'Start organizing your monthly cash flow in seconds'}
+                  {authMode === 'forgot' && 'Provide your email address to initiate recovery'}
+                  {authMode === 'reset' && 'Define a fresh password for your account'}
+                </p>
+              </div>
+
+              {/* Status Notice */}
               {statusMessage && (
-                <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium rounded-xl text-center">
+                <div className="mb-4 p-3 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs rounded-xl flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
                   {statusMessage}
                 </div>
               )}
 
-              {/* 1. LOGIN / REGISTER FORM */}
+              {/* 1. LOGIN / REGISTER */}
               {(authMode === 'login' || authMode === 'register') && (
                 <form onSubmit={handleAuth} className="space-y-4">
                   {authMode === 'register' && (
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-1.5">
-                        FULL NAME
-                      </label>
+                      <label className="block text-slate-400 text-xs font-medium mb-1.5">Full Name</label>
                       <div className="relative">
-                        <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                          <User className="w-4 h-4" />
-                        </span>
+                        <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                         <input
                           type="text"
-                          placeholder="Your Name"
-                          className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition"
+                          placeholder="e.g. Utsav Kushwaha"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           required
+                          className="w-full pl-10 pr-4 py-2.5 bg-[#080d18] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
                         />
                       </div>
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-1.5">
-                      REGISTERED EMAIL
-                    </label>
+                    <label className="block text-slate-400 text-xs font-medium mb-1.5">Email Address</label>
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <Mail className="w-4 h-4" />
-                      </span>
+                      <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                       <input
                         type="email"
-                        placeholder="utsavkushwaha4@gmail.com"
-                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition"
+                        placeholder="you@domain.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        className="w-full pl-10 pr-4 py-2.5 bg-[#080d18] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-1.5">
-                      PASSWORD
-                    </label>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-slate-400 text-xs font-medium">Password</label>
+                      {authMode === 'login' && (
+                        <button
+                          type="button"
+                          onClick={() => { setAuthMode('forgot'); setStatusMessage(''); }}
+                          className="text-[11px] text-emerald-400 hover:text-emerald-300 transition"
+                        >
+                          Forgot key?
+                        </button>
+                      )}
+                    </div>
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <Lock className="w-4 h-4" />
-                      </span>
+                      <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                       <input
                         type={showPassword ? 'text' : 'password'}
-                        placeholder="Enter password"
-                        className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition"
+                        placeholder="••••••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        className="w-full pl-10 pr-10 py-2.5 bg-[#080d18] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition"
+                        className="absolute right-3.5 top-3 text-slate-500 hover:text-slate-300"
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -341,70 +352,58 @@ export default function App() {
                   </div>
 
                   {authMode === 'login' && (
-                    <div className="flex items-center justify-between text-xs pt-1">
-                      <label className="flex items-center gap-2 cursor-pointer text-slate-600 select-none">
-                        <input
-                          type="checkbox"
-                          checked={rememberMe}
-                          onChange={(e) => setRememberMe(e.target.checked)}
-                          className="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 cursor-pointer"
-                        />
-                        <span className="text-[11px] font-medium">Keep me signed in</span>
+                    <div className="flex items-center gap-2 pt-1">
+                      <input
+                        type="checkbox"
+                        id="remember"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="w-3.5 h-3.5 accent-emerald-500 rounded cursor-pointer bg-slate-800 border-slate-700"
+                      />
+                      <label htmlFor="remember" className="text-xs text-slate-400 cursor-pointer select-none">
+                        Keep active session on this device
                       </label>
-                      <button
-                        type="button"
-                        onClick={() => { setAuthMode('forgot'); setStatusMessage(''); }}
-                        className="font-bold text-slate-500 hover:text-emerald-600 uppercase tracking-wider text-[10px] transition"
-                      >
-                        Forgot Password?
-                      </button>
                     </div>
                   )}
 
                   <button
                     type="submit"
-                    className="w-full py-3 px-4 bg-[#0e1626] hover:bg-slate-900 active:scale-[0.99] text-white text-xs font-bold uppercase tracking-widest rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 mt-2 cursor-pointer"
+                    className="w-full mt-2 py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 active:scale-[0.99] transition flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <span>{authMode === 'register' ? 'Create Free Account' : 'Authorize Login'}</span>
+                    <span>{authMode === 'register' ? 'Initialize Account' : 'Authenticate Session'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
 
-                  <div className="text-center mt-5">
-                    <p className="text-xs text-slate-500">
-                      {authMode === 'register' ? 'Already have an account?' : "Don't have an account?"}{' '}
-                      <button
-                        type="button"
-                        onClick={() => setAuthMode(authMode === 'register' ? 'login' : 'register')}
-                        className="text-emerald-600 font-bold hover:underline cursor-pointer"
-                      >
-                        {authMode === 'register' ? 'Log In' : 'Sign Up'}
-                      </button>
-                    </p>
+                  <div className="text-center pt-3">
+                    <button
+                      type="button"
+                      onClick={() => setAuthMode(authMode === 'register' ? 'login' : 'register')}
+                      className="text-xs text-slate-400 hover:text-white transition cursor-pointer"
+                    >
+                      {authMode === 'register' ? (
+                        <>Existing member? <span className="text-emerald-400 font-semibold underline">Sign In</span></>
+                      ) : (
+                        <>New to FinPulse? <span className="text-emerald-400 font-semibold underline">Create Ledger</span></>
+                      )}
+                    </button>
                   </div>
                 </form>
               )}
 
-              {/* 2. FORGOT PASSWORD FORM */}
+              {/* 2. FORGOT PASSWORD */}
               {authMode === 'forgot' && (
                 <form onSubmit={handleForgotPassword} className="space-y-4">
-                  <p className="text-xs text-slate-500 mb-2">
-                    Enter your registered email address. We'll generate a secure token to reset your password.
-                  </p>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-1.5">
-                      REGISTERED EMAIL
-                    </label>
+                    <label className="block text-slate-400 text-xs font-medium mb-1.5">Registered Email Address</label>
                     <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <Mail className="w-4 h-4" />
-                      </span>
+                      <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                       <input
                         type="email"
-                        placeholder="Your Registered Email"
-                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition"
+                        placeholder="you@domain.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        className="w-full pl-10 pr-4 py-2.5 bg-[#080d18] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition"
                       />
                     </div>
                   </div>
@@ -412,75 +411,74 @@ export default function App() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3 px-4 bg-[#0e1626] hover:bg-slate-900 active:scale-[0.99] text-white text-xs font-bold uppercase tracking-widest rounded-xl shadow-md transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                    className="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                   >
-                    <span>{loading ? 'Processing...' : 'Send Recovery Link'}</span>
+                    <span>{loading ? 'Dispersing...' : 'Dispatch Token'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
 
-                  <div className="text-center mt-4">
+                  <div className="text-center pt-2">
                     <button
                       type="button"
                       onClick={() => { setAuthMode('login'); setStatusMessage(''); }}
-                      className="text-xs text-slate-500 hover:text-emerald-600 font-bold hover:underline cursor-pointer"
+                      className="text-xs text-slate-400 hover:text-white transition cursor-pointer"
                     >
-                      &larr; Back to Login
+                      &larr; Return to Sign In
                     </button>
                   </div>
                 </form>
               )}
 
-              {/* 3. RESET PASSWORD FORM */}
+              {/* 3. RESET PASSWORD */}
               {authMode === 'reset' && (
                 <form onSubmit={handleResetPassword} className="space-y-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-1.5">
-                      NEW PASSWORD
-                    </label>
+                    <label className="block text-slate-400 text-xs font-medium mb-1.5">New Key Phrase</label>
                     <input
                       type="password"
-                      placeholder="New Password"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition"
+                      placeholder="Minimum 6 characters"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
+                      className="w-full px-4 py-2.5 bg-[#080d18] border border-slate-700/80 rounded-xl text-white text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-1.5">
-                      CONFIRM NEW PASSWORD
-                    </label>
+                    <label className="block text-slate-400 text-xs font-medium mb-1.5">Confirm Key Phrase</label>
                     <input
                       type="password"
-                      placeholder="Confirm New Password"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition"
+                      placeholder="Re-enter key phrase"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
+                      className="w-full px-4 py-2.5 bg-[#080d18] border border-slate-700/80 rounded-xl text-white text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3 px-4 bg-[#0e1626] hover:bg-slate-900 text-white text-xs font-bold uppercase tracking-widest rounded-xl shadow-md transition disabled:opacity-50 cursor-pointer"
+                    className="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition disabled:opacity-50 cursor-pointer"
                   >
-                    {loading ? 'Updating Password...' : 'Save New Password'}
+                    {loading ? 'Committing...' : 'Store New Password'}
                   </button>
                 </form>
               )}
+
             </div>
-
-            {/* Gateflow Style Designed & Developed Credits */}
-            <footer className="mt-8 pt-4 border-t border-slate-100 text-center relative z-10">
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
-                Designed &amp; Developed by{' '}
-                <span className="text-slate-800 font-bold">Utsav Kushwaha</span> &amp;{' '}
-                <span className="text-slate-800 font-bold">Gunjan Kushwaha</span>
-              </p>
-            </footer>
-
           </div>
+
+          {/* Footer Signature with 'Built by' & Balanced Size */}
+          <footer className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 px-3 text-[11px] text-slate-500">
+            <p>FinPulse Capital Systems &bull; All calculations handled locally</p>
+            <div className="flex items-center gap-1.5 bg-slate-900/60 border border-slate-800/80 px-3 py-1.5 rounded-full backdrop-blur-md">
+              <span className="text-slate-400 text-xs">Built by</span>
+              <span className="text-xs font-semibold text-emerald-400">Utsav Kushwaha</span>
+              <span className="text-slate-600 text-xs">&amp;</span>
+              <span className="text-xs font-semibold text-teal-400">Gunjan Kushwaha</span>
+            </div>
+          </footer>
+
         </div>
 
       </div>
@@ -516,7 +514,7 @@ export default function App() {
               <input
                 type="number"
                 placeholder="Update salary"
-                className="w-full bg-slate-800 px-2 py-1 text-sm rounded border border-slate-700"
+                className="w-full bg-slate-800 px-2 py-1 text-sm rounded border border-slate-700 text-slate-100"
                 value={salaryInput}
                 onChange={(e) => setSalaryInput(e.target.value)}
               />
@@ -624,7 +622,7 @@ export default function App() {
               </div>
               <button
                 type="submit"
-                className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 font-semibold rounded-lg transition mt-2 text-sm"
+                className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 font-semibold rounded-lg transition mt-2 text-sm cursor-pointer"
               >
                 Add Transaction
               </button>
@@ -657,7 +655,7 @@ export default function App() {
                       <td className="py-3 text-right">
                         <button
                           onClick={() => deleteExpense(exp._id)}
-                          className="text-slate-500 hover:text-rose-400 transition"
+                          className="text-slate-500 hover:text-rose-400 transition cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4 inline" />
                         </button>
