@@ -1,0 +1,17 @@
+{
+  "short_name": "FinPulse",
+  "name": "FinPulse - Expense Engine",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/isometric/512/wallet.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#070b14",
+  "theme_color": "#0b1120",
+  "display": "standalone",
+  "orientation": "portrait"
+}
